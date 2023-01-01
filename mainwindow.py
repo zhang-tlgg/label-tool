@@ -5,7 +5,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from skimage import io
 import numpy as np
 
-import Ui_mainwindow
+import ui.Ui_mainwindow as Ui_mainwindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         print(file_name)
         self.show_img(file_name)
 
-    def refresh_img(self, value):
+    def set_z(self, value):
         self.ui.horizontalSlider.setValue(value)
         self.ui.spinBox.setValue(value)
         img = np.array(self.img[value])
@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         h = img.shape[0]
         w = img.shape[1]
         frame = QImage(img, w, h, w, QImage.Format_Grayscale8)
-        pix = QPixmap.fromImage(frame).scaled(w/2, h/2)
+        pix = QPixmap.fromImage(frame).scaled(500, 500)
         scene = QGraphicsScene()
         scene.addPixmap(pix)
         self.ui.graphicsView.setScene(scene)
@@ -51,31 +51,20 @@ class MainWindow(QMainWindow):
         h = img.shape[0]
         w = img.shape[1]
         frame = QImage(img, w, h, w, QImage.Format_Grayscale8)
-        pix = QPixmap.fromImage(frame).scaled(w/2, h/2)
+        pix = QPixmap.fromImage(frame).scaled(480, 480)
         scene = QGraphicsScene()
         scene.addPixmap(pix)
+        
         # 构建部件
-        if(not hasattr(self.ui, 'graphicsView')):
-            self.ui.graphicsView = QtWidgets.QGraphicsView(self.ui.centralwidget)
-            self.ui.graphicsView.setObjectName("graphicsView")
         self.ui.graphicsView.setScene(scene)
         self.ui.graphicsView.show()
-        if(not hasattr(self.ui, 'horizontalSlider')):
-            self.ui.horizontalSlider = QtWidgets.QSlider(self.ui.centralwidget)
-            self.ui.horizontalSlider.setObjectName("horizontalSlider")
-            self.ui.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
-        self.ui.horizontalSlider.setGeometry(QtCore.QRect(10, h/2 + 10, w/2 - 70, 16))
         self.ui.horizontalSlider.setMaximum(band - 1)
         self.ui.horizontalSlider.setValue(0)
-        self.ui.horizontalSlider.valueChanged.connect(self.refresh_img)
+        self.ui.horizontalSlider.valueChanged.connect(self.set_z)
         self.ui.horizontalSlider.show()
-        if(not hasattr(self.ui, 'spinBox')):
-            self.ui.spinBox = QtWidgets.QSpinBox(self.ui.centralwidget)
-            self.ui.spinBox.setObjectName("spinBox")
-        self.ui.spinBox.setGeometry(QtCore.QRect(w/2 - 50, h/2 + 10, 40, 16))
         self.ui.spinBox.setMaximum(band - 1)
         self.ui.spinBox.setValue(0)
-        self.ui.spinBox.valueChanged.connect(self.refresh_img)
+        self.ui.spinBox.valueChanged.connect(self.set_z)
         self.ui.spinBox.show()
     
 
