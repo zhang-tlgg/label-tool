@@ -26,14 +26,17 @@ class Window(QMainWindow):
         self.ui.actionOpen.triggered.connect(self.open_file)
         self.ui.horizontalSlider.valueChanged.connect(self.set_value)
         self.ui.doubleSpinBox.valueChanged.connect(self.set_value)
+        self.ui.horizontalSlider.sliderReleased.connect(self.show_img_3d)
+        self.ui.doubleSpinBox.editingFinished.connect(self.show_img_3d)
         
     # 槽函数
-    def set_value(self, value):
+    def set_value(self):
         if(self.sender() == self.ui.horizontalSlider):
+            value = self.ui.horizontalSlider.value()
             self.ui.doubleSpinBox.setValue(value/1000)
         elif(self.sender() == self.ui.doubleSpinBox):
+            value = self.ui.doubleSpinBox.value()
             self.ui.horizontalSlider.setValue(value*1000)
-        self.show_img_3d()
 
     def open_file(self):
         if(not hasattr(self, 'recent_path')):
@@ -45,10 +48,9 @@ class Window(QMainWindow):
         self.img = skimage.io.imread(file_name)
         # self.img = self.img.transpose(1,2,0)
         # 全读有点卡，先切一部分
-        self.img = self.img.transpose(1,2,0)[:400, :400, :50]
+        self.img = self.img.transpose(1,2,0)[:500, :500, :100]
         self.show_img_3d()
 
-    # 成员函数
     def show_img_3d(self):
         '''
         对比度和透明度的调节还可以优化
