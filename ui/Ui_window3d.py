@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:\workspace\visual\mine\demo\test.ui'
+# Form implementation generated from reading ui file 'd:\workspace\visual\mine\ui\window3d.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -14,14 +14,47 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(750, 550)
+        MainWindow.resize(850, 500)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalSlider = QtWidgets.QSlider(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.horizontalSlider.sizePolicy().hasHeightForWidth())
+        self.horizontalSlider.setSizePolicy(sizePolicy)
+        self.horizontalSlider.setMinimumSize(QtCore.QSize(150, 16))
+        self.horizontalSlider.setMaximumSize(QtCore.QSize(250, 16))
+        self.horizontalSlider.setMaximum(1000)
+        self.horizontalSlider.setProperty("value", 1000)
+        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setObjectName("horizontalSlider")
+        self.horizontalLayout.addWidget(self.horizontalSlider)
+        self.doubleSpinBox = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.doubleSpinBox.sizePolicy().hasHeightForWidth())
+        self.doubleSpinBox.setSizePolicy(sizePolicy)
+        self.doubleSpinBox.setDecimals(3)
+        self.doubleSpinBox.setMaximum(1.0)
+        self.doubleSpinBox.setSingleStep(0.001)
+        self.doubleSpinBox.setProperty("value", 1.0)
+        self.doubleSpinBox.setObjectName("doubleSpinBox")
+        self.horizontalLayout.addWidget(self.doubleSpinBox)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        spacerItem = QtWidgets.QSpacerItem(20, 413, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 750, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 850, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")

@@ -29,9 +29,10 @@ class MainWindow(QMainWindow):
         if(self.sender() == self.ui.horizontalSlider or self.sender() == self.ui.spinBox):
             self.ui.horizontalSlider.setValue(value)
             self.ui.spinBox.setValue(value)
-        elif(self.sender() == self.ui.horizontalSlider_2 or self.sender() == self.ui.spinBox_2):
-            self.ui.horizontalSlider_2.setValue(value)
-            self.ui.spinBox_2.setValue(value)
+        elif(self.sender() == self.ui.horizontalSlider_2):
+            self.ui.doubleSpinBox.setValue(value/1000)
+        elif(self.sender() == self.ui.doubleSpinBox):
+            self.ui.horizontalSlider_2.setValue(value*1000)
         self.show_img()
 
     # 成员函数
@@ -45,17 +46,27 @@ class MainWindow(QMainWindow):
         self.ui.spinBox.setMaximum(self.img.shape[0] - 1)
         self.ui.spinBox.valueChanged.connect(self.set_value)
         self.ui.horizontalSlider_2.valueChanged.connect(self.set_value)
-        self.ui.spinBox_2.valueChanged.connect(self.set_value)
+        self.ui.doubleSpinBox.valueChanged.connect(self.set_value)
         
     def show_img(self):
         img = np.array(self.img[self.ui.horizontalSlider.value()])
         h = img.shape[0]
         w = img.shape[1]
         if(img.dtype == 'uint16'):
-            img = np.where(img > self.ui.horizontalSlider_2.value(), 65535, img)
-            frame = QImage(img, w, h, QImage.Format_Grayscale16)
+            max_num = np.uint16(img.max() * self.ui.doubleSpinBox.value())
+            img = np.where(img > max_num, max_num, img)
+            if(max_num):
+                img = np.uint16(img / max_num * 65535)
+            else:
+                img = np.ones(img.shape, dtype=np.uint16) * 65535
+            frame = QImage(img, w, h, 2*w, QImage.Format_Grayscale16)
         else:
-            img = np.where(img > self.ui.horizontalSlider_2.value(), 255, img)
+            max_num = np.uint8(img.max() * self.ui.doubleSpinBox.value())
+            img = np.where(img > max_num, max_num, img)
+            if(max_num):
+                img = np.uint8(img / max_num * 255)
+            else:
+                img = np.ones(img.shape, dtype=np.uint8) * 255
             frame = QImage(img, w, h, w, QImage.Format_Grayscale8)
         pix = QPixmap.fromImage(frame).scaled(500, 500)
         scene = QGraphicsScene()

@@ -14,37 +14,63 @@ class Window(QMainWindow):
 
         # 3d组件
         self.view_widget = gl.GLViewWidget(self.ui.centralwidget)
-        self.view_widget.setCameraPosition(distance=20)
-        self.ui.gridLayout.addWidget(self.view_widget, 0, 0, 1, 1)
+        self.view_widget.setCameraPosition(distance=500)
+        self.ui.gridLayout.addWidget(self.view_widget, 0, 1, 1, 1)
         # 添加 item
         g = gl.GLGridItem()
+        g.setSize(10, 10)
+        g.scale(100, 100, 100)
         self.view_widget.addItem(g)
-        self.scatter_plot = gl.GLScatterPlotItem()
-        self.view_widget.addItem(self.scatter_plot)
         
         # 信号与槽绑定
         self.ui.actionOpen.triggered.connect(self.open_file)
-    
+        self.ui.horizontalSlider.valueChanged.connect(self.set_value)
+        self.ui.doubleSpinBox.valueChanged.connect(self.set_value)
+        
     # 槽函数
+    def set_value(self, value):
+        if(self.sender() == self.ui.horizontalSlider):
+            self.ui.doubleSpinBox.setValue(value/1000)
+        elif(self.sender() == self.ui.doubleSpinBox):
+            self.ui.horizontalSlider.setValue(value*1000)
+        self.show_img_3d()
+
     def open_file(self):
         if(not hasattr(self, 'recent_path')):
             self.recent_path = '.'
         file_name, _ = QFileDialog.getOpenFileName(self, "Open file", self.recent_path, "Image files (*.jpg *.gif *.png *.jpeg *.tif)")
         self.recent_path, _ = os.path.split(file_name)
         print(file_name)
-        self.show_img_3d(file_name)
-
-    def show_img_3d(self, file_name):
+        # 读取图片
         self.img = skimage.io.imread(file_name)
+        # self.img = self.img.transpose(1,2,0)
+        # 全读有点卡，先切一部分
         self.img = self.img.transpose(1,2,0)[:400, :400, :50]
-        x,y,z = self.img.shape
-        pos = np.mgrid[:x, :y, :z].transpose(1, 2, 3, 0) * 0.005 #0.005
-        pos = pos.reshape(x*y*z, 3)
-        img = self.img.reshape(self.img.size)
-        color = np.empty((img.size, 4), dtype=np.float32)
-        color[:,0] = color[:,1] = color[:,2] = img / np.max(img)
-        color[:,3] = img / np.max(img) # color[:,3] = 0.02
-        self.scatter_plot.setData(pos=pos, color=color, pxMode=True)
+        self.show_img_3d()
+
+    # 成员函数
+    def show_img_3d(self):
+        '''
+        对比度和透明度的调节还可以优化
+        '''
+        # 增强对比度
+        img = np.array(self.img)
+        max_num = np.uint16(img.max() * self.ui.doubleSpinBox.value())
+        img = np.where(img > max_num, max_num, img)
+        if(max_num):
+            img = np.uint8(img / max_num * 255)
+        else:
+            img = np.ones(img.shape, dtype=np.uint8) * 255
+        # 绘图
+        data = np.empty(img.shape + (4,), dtype=np.ubyte)
+        data[..., 2] = data[..., 1] = data[..., 0] = img
+        data[..., 3] = img
+        if(not hasattr(self, 'volume_item')):
+            self.volume_item = gl.GLVolumeItem(data)
+            self.volume_item.translate(-data.shape[0]/2, -data.shape[1]/2, 0)
+            self.view_widget.addItem(self.volume_item)
+        else:
+            self.volume_item.setData(data)
 
 if __name__ == '__main__':
     # PyQt5 程序固定写法
