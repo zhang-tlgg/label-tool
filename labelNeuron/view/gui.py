@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QMessageBox,
 )
+import pyqtgraph
 import pyqtgraph.opengl as gl
 
 from ..ui.Ui_mainwindow import Ui_MainWindow
@@ -27,6 +28,7 @@ if TYPE_CHECKING:
 class GUI(Ui_MainWindow, QtWidgets.QMainWindow):
     def __init__(self, control: "Controller") -> None:
         super(GUI, self).__init__()
+        # pyqtgraph.setConfigOption('useOpenGL', True)
         self.setupUi(self)
         self.resize(1024, 600)
         self.setWindowTitle("labelNeuron")
@@ -75,17 +77,13 @@ class GUI(Ui_MainWindow, QtWidgets.QMainWindow):
     # Collect, filter and forward events to viewer
     def eventFilter(self, event_object, event) -> bool:
         # Mouse Events
-        if (event.type() == QEvent.MouseMove) and (
-            event_object == self.glview_widget
-            ):
+        if (event.type() == QEvent.MouseMove) and (event_object == self.glview_widget):
             self.controller.mouse_move_event(event)
-        elif (event.type() == QEvent.MouseButtonPress) and (
-            event_object == self.glview_widget
-            ):
-            if (event.buttons() == QtCore.Qt.LeftButton):
-                print('left mouse button press')
-            elif (event.buttons() == QtCore.Qt.RightButton):
-                print('right mouse button press')
+        elif (event.type() == QEvent.MouseButtonPress) and (event_object == self.glview_widget):
+            if (event.buttons() == QtCore.Qt.RightButton):
+                self.controller.mouse_clicked(event)
+            # elif (event.buttons() == QtCore.Qt.LeftButton):
+            #     print('right mouse button press')
 
         return False
     

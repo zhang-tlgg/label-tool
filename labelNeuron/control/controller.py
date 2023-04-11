@@ -41,6 +41,12 @@ class Controller:
             )
 
     # EVENT PROCESSING
+    def mouse_clicked(self, a0: QtGui.QMouseEvent) -> None:
+        """Triggers actions when the user clicks the mouse."""
+        self.last_cursor_pos = a0.pos()
+        self.view.glview_widget.get_world_coords(a0.x(), a0.y())
+            
+
     def mouse_move_event(self, a0: QtGui.QMouseEvent) -> None:
         """Triggers actions when the user moves the mouse."""
         self.curr_cursor_pos = a0.pos()  # Updates the current mouse cursor position
